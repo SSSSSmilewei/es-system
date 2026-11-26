@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Verda Ponto</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE everyday: a learning and community hub, friendly but orderly
+   IDEA the green-star flag and Esperanto's own word-building kit: roots and affixes snap together like tiles
+   PICTURE a large interactive word builder on home; a true-scale history band on Kulturo
+   COLOUR white ground, deep green ink, flag green #009a44 dominant, pale mint fields, coral accent for "what matters"
+   TYPE Unbounded (display, has ĉĝĥĵŝŭ) + Inter / system CJK for text
+   LAYOUT sticky green bar with sections; home: title over full-width builder, then three columns; phone: stacked */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0b1510);--ink:light-dark(#0c2416,#e6f2ea);--mute:light-dark(#4d6657,#9db5a6);--green:light-dark(#009a44,#2fc46b);--deep:light-dark(#00672e,#1f8f4d);--mint:light-dark(#e7f6ec,#12261a);--line:light-dark(#cfe5d7,#24402f);--card:light-dark(#ffffff,#10201a);--coral:light-dark(#e8432e,#ff7a5c);--pre:light-dark(#2b6cd6,#7aa8ff);--suf:light-dark(#b8521a,#f0a060);--end:light-dark(#7a3fb5,#c49af0)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;overflow-x:clip}
+body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:var(--deep);z-index:30}
+h1,h2,h3,.disp{font-family:Unbounded,Inter,"PingFang SC","Microsoft YaHei",sans-serif;letter-spacing:-.02em;line-height:1.1;margin:0}
+h1{font-size:clamp(30px,4.6vw,50px);font-weight:700}
+h2{font-size:clamp(22px,2.6vw,30px);font-weight:700}
+h3{font-size:18px;font-weight:500}
+a{color:var(--deep)}
+.band{padding-block:clamp(24px,4vw,56px);padding-left:max(5vw,16px,env(safe-area-inset-left,0px));padding-right:max(5vw,16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1240px;margin:0 auto}
+.mute{color:var(--mute)}
+.small{font-size:14px}
+button,input,select,textarea{font:inherit;color:inherit}
+input,select,textarea{font-size:16px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--green);outline-offset:1px}
+.btn{border:0;border-radius:999px;padding:10px 18px;min-height:44px;background:var(--green);color:#fff;font-weight:600;cursor:pointer}
+.btn:hover{background:var(--deep)}
+.btn.ghost{background:transparent;color:var(--deep);border:1.5px solid var(--line)}
+.btn.ghost:hover{background:var(--mint)}
+.btn:focus-visible,.chip:focus-visible,nav a:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
+/* nav */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--deep);color:#fff}
+header .in{display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding-block:10px;max-width:1240px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-family:Unbounded,sans-serif;font-weight:700;font-size:18px;white-space:nowrap}
+.logo svg{width:30px;height:30px}
+nav{display:flex;gap:4px;flex-wrap:wrap;flex:1}
+nav a{color:#e8fff0;text-decoration:none;padding:8px 12px;border-radius:999px;font-size:15px;white-space:nowrap}
+nav a:hover{background:rgba(255,255,255,.12)}
+nav a.on{background:#fff;color:var(--deep);font-weight:600}
+nav a i{font-style:normal;opacity:.7;font-size:12px;margin-left:4px}
+.me{font-size:14px;opacity:.9;white-space:nowrap}
+[hidden]{display:none!important}
+/* home builder */
+.hero{background:var(--mint)}
+.hero .top{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px;align-items:end;margin-bottom:28px}
+.hero p.lead{font-size:17px;margin:12px 0 0;max-width:60ch}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.kpi b{display:block;font-family:Unbounded,sans-serif;font-size:24px;color:var(--deep);white-space:nowrap}
+.kpi span{font-size:13px;color:var(--mute)}
+.builder{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:clamp(16px,2.4vw,28px)}
+.result{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;margin-bottom:20px}
+.word{font-family:Unbounded,sans-serif;font-size:clamp(36px,6.4vw,76px);font-weight:700;line-height:1;letter-spacing:-.02em;overflow-wrap:anywhere}
+.word .p{color:var(--pre)}.word .r{color:var(--green)}.word .s{color:var(--suf)}.word .e{color:var(--end)}
+.word .dot{color:var(--line)}
+.meaning{font-size:20px;font-weight:600}
+.badge{display:inline-block;font-size:13px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--mint);color:var(--deep);white-space:nowrap}
+.badge.warn{background:color-mix(in srgb,var(--coral) 14%,transparent);color:var(--coral)}
+.formula{font-size:15px;color:var(--mute);margin:0 0 18px}
+.formula b{color:var(--ink)}
+.slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.slot{border-radius:14px;padding:12px;border:1.5px solid var(--line)}
+.slot h4{margin:0 0 8px;font-size:14px;display:flex;justify-content:space-between;gap:8px}
+.slot h4 em{font-style:normal;color:var(--mute);font-weight:400}
+.slot[data-k=p]{border-top:6px solid var(--pre)}.slot[data-k=r]{border-top:6px solid var(--green)}.slot[data-k=s]{border-top:6px solid var(--suf)}.slot[data-k=e]{border-top:6px solid var(--end)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:6px 10px;min-height:40px;cursor:pointer;font-size:15px;text-align:left;line-height:1.2}
+.chip small{display:block;font-size:12px;color:var(--mute)}
+.chip:hover{border-color:var(--green)}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip.on small{color:inherit;opacity:.75}
+.presets{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:18px;font-size:14px}
+.cols3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+.panel h3{margin-bottom:10px}
+.list{list-style:none;margin:0;padding:0}
+.list li{padding:10px 0;border-top:1px solid var(--line)}
+.list li:first-child{border-top:0}
+.date{font-weight:700;color:var(--coral);white-space:nowrap;margin-right:8px}
+.wotd{font-family:Unbounded,sans-serif;font-size:34px;color:var(--deep);margin:4px 0}
+/* page heads */
+.phead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px;margin-bottom:24px}
+.phead p{margin:8px 0 0;max-width:62ch}
+.grid2{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;align-items:start}
+/* flashcard */
+.card3d{perspective:1200px;height:300px;cursor:pointer}
+.flip{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.flip.back{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+.face.f{background:var(--green);color:#fff}
+.face.b{background:var(--card);border:2px solid var(--green);transform:rotateY(180deg)}
+.face .big{font-family:Unbounded,sans-serif;font-size:clamp(34px,5vw,52px);font-weight:700}
+.face .ex{margin-top:10px;font-style:italic}
+.star-bg{position:absolute;right:18px;top:18px;width:46px;opacity:.9}
+.fcbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.prog{height:10px;border-radius:99px;background:var(--mint);overflow:hidden;flex:1;min-width:120px}
+.prog i{display:block;height:100%;background:var(--green);transition:width .3s}
+.path{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.path li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.lvl{font-family:Unbounded,sans-serif;font-size:13px;background:var(--mint);color:var(--deep);border-radius:8px;padding:6px 8px;white-space:nowrap}
+.pct{font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.minibar{height:6px;background:var(--mint);border-radius:9px;margin-top:6px;overflow:hidden}
+.minibar i{display:block;height:100%;background:var(--green)}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:13px;color:var(--mute);font-weight:600}
+td.y{white-space:nowrap;font-variant-numeric:tabular-nums}
+.tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:6px;background:var(--mint);color:var(--deep);margin:2px 4px 2px 0;white-space:nowrap}
+.xsys{display:grid;gap:8px}
+.xsys output{font-family:Unbounded,sans-serif;font-size:22px;color:var(--deep);min-height:34px;overflow-wrap:anywhere}
+/* knowledge */
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.toolbar input{flex:1 1 240px;width:auto}
+.toolbar select{width:auto;flex:0 0 auto}
+.kgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.kcard{text-align:left;border:1px solid var(--line);border-radius:16px;padding:18px;background:var(--card);cursor:pointer;display:flex;flex-direction:column;gap:8px}
+.kcard:hover{border-color:var(--green)}
+.kcard h3{font-size:17px}
+.kcard p{margin:0;font-size:15px;color:var(--mute)}
+dialog{border:0;border-radius:20px;padding:0;max-width:min(680px,92vw);width:100%;background:var(--card);color:var(--ink)}
+dialog::backdrop{background:rgba(0,30,12,.5)}
+dialog .dh{background:var(--green);color:#fff;padding:22px 24px}
+dialog .db{padding:20px 24px 24px}
+dialog .db p{margin:0 0 12px}
+/* forum */
+.fgrid{display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;align-items:start}
+.cats{display:grid;gap:6px;position:sticky;top:80px}
+.cats button{text-align:left;border:0;background:transparent;padding:10px 12px;border-radius:10px;cursor:pointer;display:flex;justify-content:space-between;min-height:44px;align-items:center;gap:10px}
+.cats button:hover{background:var(--mint)}
+.cats button.on{background:var(--mint);color:var(--deep);font-weight:700}
+.thread{border:1px solid var(--line);border-radius:16px;background:var(--card);margin-bottom:12px}
+.thread>button{all:unset;display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:14px;padding:16px;cursor:pointer;width:100%;box-sizing:border-box}
+.thread>button:focus-visible{outline:3px solid var(--coral);border-radius:16px}
+.av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700}
+.thread h3{font-size:16px;font-family:inherit;font-weight:700;letter-spacing:0}
+.meta{font-size:13px;color:var(--mute)}
+.count{font-weight:700;color:var(--deep);white-space:nowrap;font-size:14px}
+.replies{border-top:1px solid var(--line);padding:6px 16px 16px 74px}
+.reply{padding:10px 0;border-bottom:1px dashed var(--line)}
+.reply p{margin:4px 0 0}
+.rform{display:flex;gap:8px;margin-top:12px}
+.rform input{flex:1}
+.newpost{display:grid;gap:10px;margin-bottom:20px}
+.newpost .row{display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:10px}
+/* culture */
+.tl{position:relative;height:300px}
+.tl svg{position:absolute;inset:0;width:100%;height:100%}
+.tl svg text{paint-order:stroke;stroke:var(--bg);stroke-width:4px;font-size:13px;fill:var(--ink)}
+.poem{background:var(--deep);color:#fff;border-radius:20px;padding:28px;font-size:18px;line-height:1.7}
+.poem .disp{font-size:22px;margin-bottom:10px}
+.ev{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start;padding:14px 0;border-top:1px solid var(--line)}
+.cal{width:62px;text-align:center;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.cal b{display:block;background:var(--coral);color:#fff;font-size:12px;padding:2px 0}
+.cal span{display:block;font-family:Unbounded,sans-serif;font-size:22px;padding:4px 0}
+footer{background:var(--deep);color:#dff5e7;font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+.note{font-size:13px;color:var(--mute);margin-top:14px}
+@media(max-width:900px){.hero .top,.grid2{grid-template-columns:minmax(0,1fr)}.slots{grid-template-columns:repeat(2,minmax(0,1fr))}.cols3{grid-template-columns:minmax(0,1fr)}.fgrid{grid-template-columns:minmax(0,1fr)}.cats{position:static;display:flex;flex-wrap:wrap}.cats button{flex:0 0 auto}}
+@media(max-width:600px){.slots{grid-template-columns:minmax(0,1fr)}.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.kpi b{font-size:19px}nav a{padding:6px 9px;font-size:14px}nav a i{display:none}.me{display:none}.replies{padding-left:16px}.newpost .row{grid-template-columns:minmax(0,1fr)}table{font-size:14px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flex;justify-content:space-between;gap:12px;border:0;padding:3px 0}.stack td::before{content:attr(data-l);color:var(--mute);font-size:13px;flex:0 0 auto}.card3d{height:260px}}
+@media(prefers-reduced-motion:reduce){.flip{transition:none}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="star" viewBox="0 0 100 100"><path d="M50 4 61 38 97 38 68 59 79 94 50 73 21 94 32 59 3 38 39 38Z"/></symbol></defs></svg>
+
+<header>
+  <div class="in band" style="padding-block:10px">
+    <a class="logo" href="#hejmo"><svg viewBox="0 0 100 100" fill="#fff"><use href="#star"/></svg>Verda Ponto</a>
+    <nav id="nav">
+      <a href="#hejmo">首页<i>Hejmo</i></a>
+      <a href="#lerni">学习<i>Lerni</i></a>
+      <a href="#scio">知识<i>Scio</i></a>
+      <a href="#biblioteko">文献<i>Biblioteko</i></a>
+      <a href="#forumo">论坛<i>Forumo</i></a>
+      <a href="#kulturo">文化<i>Kulturo</i></a>
+    </nav>
+    <span class="me">Saluton, <b id="meName">Lernanto</b>!</span>
+  </div>
+</header>
+
+<main>
+<!-- HOME -->
+<section data-page="hejmo">
+  <div class="band hero"><div class="wrap">
+    <div class="top">
+      <div>
+        <h1>世界语，<br>一座绿色的桥</h1>
+        <p class="lead">学习、收藏、讨论、传播，一站完成。世界语只有 16 条基本语法规则，词根加词缀就能拼出新词，先在下面试一试。</p>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><b>16</b><span>条基本规则</span></div>
+        <div class="kpi"><b>1887</b><span>《第一书》出版</span></div>
+        <div class="kpi"><b id="kStreak">7 天</b><span>你的连续学习</span></div>
+      </div>
+    </div>
+    <div class="builder" aria-label="构词器">
+      <div class="result">
+        <div class="word" id="bWord"></div>
+        <div><div class="meaning" id="bMean"></div><span class="badge" id="bBadge"></span></div>
+      </div>
+      <p class="formula" id="bFormula"></p>
+      <div class="slots" id="slots"></div>
+      <div class="presets"><span class="mute">试试这些词：</span><span id="presets"></span></div>
+    </div>
+  </div></div>
+  <div class="band"><div class="wrap cols3">
+    <div class="panel">
+      <h3>今日词汇</h3>
+      <div class="wotd" id="wWord"></div>
+      <div id="wMean" style="font-weight:600"></div>
+      <p class="mute small" id="wEx" style="font-style:italic"></p>
+      <a class="btn" href="#lerni" style="display:inline-block;text-decoration:none">去背单词</a>
+    </div>
+    <div class="panel"><h3>近期活动</h3><ul class="list" id="homeEvents"></ul></div>
+    <div class="panel"><h3>论坛热帖</h3><ul class="list" id="homeThreads"></ul></div>
+  </div></div>
+</section>
+
+<!-- LEARN -->
+<section data-page="lerni" hidden>
+  <div class="band"><div class="wrap">
+    <div class="phead"><div><h2>学习中心</h2><p class="mute">闪卡记忆、分级课程和语法速查。进度保存在本机浏览器。</p></div></div>
+    <div class="grid2">
+      <div>
+        <div class="card3d" id="fc" tabindex="0" role="button" aria-label="翻转卡片">
+          <div class="flip" id="flip">
+            <div class="face f"><svg class="star-bg" viewBox="0 0 100 100" fill="#fff"><use href="#star"/></svg><div class="big" id="fcEo"></div><div style="opacity:.85;margin-top:8px">点击翻面</div></div>
+            <div class="face b"><div class="big" id="fcZh" style="color:var(--deep)"></div><div class="ex" id="fcEx"></div><div class="mute small" id="fcExZh"></div></div>
+          </div>
+        </div>
+        <div class="fcbar">
+          <button class="btn ghost" id="again">再看一次</button>
+          <button class="btn" id="know">记住了</button>
+          <div class="prog" title="已掌握"><i id="fcProg"></i></div>
+          <span class="pct" id="fcPct"></span>
+        </div>
+        <h3 style="margin:32px 0 12px">词尾速查</h3>
+        <div class="scroll"><table>
+          <thead><tr><th>词尾</th><th>作用</th><th>例子</th></tr></thead>
+          <tbody id="endings"></tbody>
+        </table></div>
+      </div>
+      <div>
+        <h3 style="margin-bottom:12px">分级课程</h3>
+        <ol class="path" id="path"></ol>
+        <div class="panel" style="margin-top:24px">
+          <h3>x 系统输入转换</h3>
+          <p class="mute small" style="margin:0 0 10px">键盘没有带帽字母？输入 cx gx hx jx sx ux，自动转为 ĉ ĝ ĥ ĵ ŝ ŭ。</p>
+          <div class="xsys">
+            <input id="xin" value="Mi sxatas mangxi cxokoladon" aria-label="x 系统输入">
+            <output id="xout"></output>
+            <button class="btn ghost" id="xcopy" style="justify-self:start">复制结果</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- KNOWLEDGE -->
+<section data-page="scio" hidden>
+  <div class="band"><div class="wrap">
+    <div class="phead"><div><h2>知识库</h2><p class="mute">语言、历史、社群的条目汇编，可搜索、按主题筛选，点开阅读全文。</p></div></div>
+    <div class="toolbar">
+      <input id="kq" placeholder="搜索条目，例如 宾格、柴门霍夫、绿星" aria-label="搜索知识库">
+      <select id="kt" aria-label="主题"><option value="">全部主题</option><option>语法</option><option>历史</option><option>人物</option><option>社群</option><option>文化</option></select>
+    </div>
+    <div class="kgrid" id="kgrid"></div>
+  </div></div>
+</section>
+
+<!-- LIBRARY -->
+<section data-page="biblioteko" hidden>
+  <div class="band"><div class="wrap">
+    <div class="phead"><div><h2>文献库</h2><p class="mute">原创文学、译作、工具书与期刊的书目收集。任何人都可以补充条目。</p></div><button class="btn" id="addLit">添加文献</button></div>
+    <form class="panel newpost" id="litForm" hidden>
+      <div class="row"><input id="lT" placeholder="书名 / 篇名" required><input id="lY" placeholder="年份" inputmode="numeric" required></div>
+      <div class="row"><input id="lA" placeholder="作者 / 译者" required><select id="lK"><option>原创文学</option><option>翻译文学</option><option>工具书</option><option>教材</option><option>期刊</option></select></div>
+      <input id="lN" placeholder="简介（选填）">
+      <div><button class="btn">保存</button> <button type="button" class="btn ghost" id="litCancel">取消</button></div>
+    </form>
+    <div class="toolbar">
+      <input id="lq" placeholder="搜索书名、作者" aria-label="搜索文献">
+      <select id="lk" aria-label="类型"><option value="">全部类型</option><option>原创文学</option><option>翻译文学</option><option>工具书</option><option>教材</option><option>期刊</option></select>
+      <select id="ls" aria-label="排序"><option value="y">按年份</option><option value="t">按书名</option></select>
+    </div>
+    <div class="scroll"><table class="stack">
+      <thead><tr><th>书名</th><th>作者</th><th>年份</th><th>类型</th><th>简介</th></tr></thead>
+      <tbody id="lit"></tbody>
+    </table></div>
+    <p class="note" id="litCount"></p>
+  </div></div>
+</section>
+
+<!-- FORUM -->
+<section data-page="forumo" hidden>
+  <div class="band"><div class="wrap">
+    <div class="phead"><div><h2>爱好者论坛</h2><p class="mute">提问、切磋翻译、约线下聚会。欢迎用中文或世界语发帖。</p></div><button class="btn" id="newBtn">发新帖</button></div>
+    <div class="fgrid">
+      <div class="cats" id="cats"></div>
+      <div>
+        <form class="panel newpost" id="postForm" hidden>
+          <div class="row"><input id="pT" placeholder="标题" required><select id="pC"></select></div>
+          <textarea id="pB" rows="4" placeholder="正文" required></textarea>
+          <div><button class="btn">发布</button> <button type="button" class="btn ghost" id="postCancel">取消</button></div>
+        </form>
+        <div id="threads"></div>
+        <p class="note">示例帖子和用户名均为演示内容，新帖只保存在你的浏览器里。</p>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- CULTURE -->
+<section data-page="kulturo" hidden>
+  <div class="band" style="background:var(--mint)"><div class="wrap">
+    <div class="phead"><div><h2>一百四十年，一颗绿星</h2><p class="mute">从华沙的一本小册子到今天的网络课程，按真实时间比例排列。</p></div></div>
+    <div class="tl" id="tl"><svg id="tlsvg" role="img" aria-label="世界语历史时间轴"></svg></div>
+  </div></div>
+  <div class="band"><div class="wrap grid2">
+    <div>
+      <h3 style="margin-bottom:6px">活动日历</h3>
+      <p class="mute small" style="margin:0 0 8px">12 月 15 日是柴门霍夫日，世界各地的世界语者在这一天读书、聚会。以下活动为示例。</p>
+      <div id="events"></div>
+    </div>
+    <div>
+      <div class="poem">
+        <div class="disp">La Espero 希望</div>
+        En la mondon venis nova sento,<br>tra la mondo iras forta voko;<br>per flugiloj de facila vento<br>nun de loko flugu ĝi al loko.
+        <p style="font-size:15px;opacity:.85;margin:16px 0 0">柴门霍夫作诗，后成为世界语运动的会歌。<br>大意：一种新的情感来到世间，一声有力的呼唤传遍世界……</p>
+      </div>
+      <div class="panel" style="margin-top:20px">
+        <h3>绿星的含义</h3>
+        <p style="margin:0">绿色象征希望，五角代表五大洲。“Esperanto”本是柴门霍夫的笔名，意为“怀着希望的人”。</p>
+      </div>
+    </div>
+  </div></div>
+</section>
+</main>
+
+<footer class="band" style="padding-block:24px"><div class="wrap">
+  <span>Verda Ponto · 世界语学习与交流平台演示版</span>
+  <span>Ĉiuj lingvoj estas egalaj. 所有语言一律平等。</span>
+</div></footer>
+
+<dialog id="dlg"><div class="dh"><h2 id="dT" style="font-size:24px"></h2><div id="dTag" style="margin-top:8px"></div></div><div class="db" id="dB"></div><div style="padding:0 24px 22px"><button class="btn" id="dClose">关闭</button></div></dialog>
+
+<script>
+{
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const load=(k,d)=>{try{const v=localStorage.getItem('vp_'+k);return v?JSON.parse(v):d}catch(e){return d}};
+const save=(k,v)=>{try{localStorage.setItem('vp_'+k,JSON.stringify(v))}catch(e){}};
+
+/* ---------- word builder ---------- */
+const PARTS={
+ p:{t:'前缀',d:'可选',o:[['','无','—'],['mal','相反','mal-'],['re','再、回','re-'],['ge','男女两性','ge-']]},
+ r:{t:'词根',d:'必选',o:[['san','健康'],['lern','学'],['bel','美'],['dom','房屋'],['libr','书'],['kant','唱'],['hund','狗'],['grand','大']]},
+ s:{t:'后缀',d:'可选',o:[['','无','—'],['ul','…的人','-ul-'],['ej','场所','-ej-'],['in','女性','-in-'],['et','小','-et-'],['eg','大、极','-eg-'],['ist','职业者','-ist-'],['ar','集合','-ar-'],['ad','持续动作','-ad-']]},
+ e:{t:'词尾',d:'必选',o:[['o','名词'],['a','形容词'],['e','副词'],['i','动词原形'],['as','现在时'],['is','过去时'],['os','将来时'],['oj','名词复数']]}
+};
+const DICT={malsanulejo:'医院',malsanulo:'病人',malsana:'生病的',sana:'健康的',sano:'健康',lernejo:'学校',lerni:'学习',relerni:'重新学习',lernas:'（正在）学习',lernis:'学过',lernos:'将要学',bela:'美丽的',malbela:'丑陋的',bele:'美丽地',domo:'房子',dometo:'小屋',domego:'大厦',domoj:'房子（复数）',libro:'书',libroj:'书（复数）',librejo:'书店',libraro:'藏书、书库',libreto:'小册子',kanti:'唱歌',kantas:'（正在）唱',kantisto:'歌手',kantistino:'女歌手',kanto:'歌曲',kantado:'歌唱（活动）',hundo:'狗',hundino:'母狗',hundeto:'小狗',hundego:'大狗',granda:'大的',malgranda:'小的',grandega:'巨大的',grandeco:'大小',saneco:'健康状况',gelernantoj:'男女学生们',malsanulino:'女病人',lernado:'学习（过程）'};
+let B=load('b',{p:'mal',r:'san',s:'ul',e:'o'});
+const PRE=[['mal','san','ul','o'],['','lern','ej','o'],['','kant','ist','o'],['','hund','et','o'],['mal','bel','','a'],['','libr','ej','o'],['','dom','eg','o']];
+function gloss(k,v){const o=PARTS[k].o.find(x=>x[0]===v);return o?o[1]:''}
+function drawBuilder(){
+ let sufx=B.s;
+ const parts=[['p',B.p],['r',B.r],['s',sufx],['e',B.e]].filter(x=>x[1]);
+ const w=parts.map(x=>x[1]).join('');
+ $('#bWord').innerHTML=parts.map(([k,v])=>`<span class="${k}">${esc(v)}</span>`).join('<span class="dot">·</span>');
+ const real=DICT[w];
+ $('#bMean').textContent=real?'= '+real:'= '+parts.map(([k,v])=>gloss(k,v)).join(' + ');
+ const b=$('#bBadge');b.textContent=real?'常用词':'合乎规则的新组合';b.className='badge'+(real?'':' warn');
+ $('#bFormula').innerHTML=parts.map(([k,v])=>`<b>${esc(k==='p'?v+'-':k==='s'?'-'+v+'-':k==='e'?'-'+v:v)}</b> ${esc(gloss(k,v))}`).join('　+　');
+ $('#slots').innerHTML=Object.entries(PARTS).map(([k,P])=>`<div class="slot" data-k="${k}"><h4>${P.t}<em>${P.d}</em></h4><div class="chips">${P.o.map(([v,g,l])=>`<button class="chip${B[k]===v?' on':''}" data-k="${k}" data-v="${v}" aria-pressed="${B[k]===v}">${esc(l||v)}<small>${esc(g)}</small></button>`).join('')}</div></div>`).join('');
+ save('b',B);
+}
+$('#slots').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;B[c.dataset.k]=c.dataset.v;drawBuilder()});
+$('#presets').innerHTML=PRE.map((p,i)=>`<button class="chip" data-i="${i}">${p.join('')}</button>`).join(' ');
+$('#presets').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;const [p,r,s,en]=PRE[c.dataset.i];B={p,r,s,e:en};drawBuilder()});
+drawBuilder();
+
+/* ---------- vocabulary ---------- */
+const VOC=[['Saluton','你好','Saluton, kiel vi fartas?','你好，你好吗？'],['Dankon','谢谢','Dankon pro via helpo.','谢谢你的帮助。'],['amiko','朋友','Li estas mia bona amiko.','他是我的好朋友。'],['espero','希望','Ni havas grandan esperon.','我们怀有很大的希望。'],['lerni','学习','Mi lernas Esperanton.','我在学世界语。'],['libro','书','Ĉi tiu libro estas interesa.','这本书很有趣。'],['verda','绿色的','La stelo estas verda.','星是绿色的。'],['akvo','水','Bonvolu doni al mi akvon.','请给我一些水。'],['manĝi','吃','Ni manĝos kune.','我们将一起吃饭。'],['ĉiutage','每天','Mi legas ĉiutage.','我每天阅读。'],['ĝoja','快乐的','Ŝi estas ĝoja hodiaŭ.','她今天很开心。'],['mondo','世界','La mondo estas granda.','世界很大。'],['paco','和平','Ni deziras pacon.','我们渴望和平。'],['vojaĝi','旅行','Ili vojaĝis al Ĉinio.','他们去中国旅行了。'],['lingvo','语言','Ĉiu lingvo estas valora.','每种语言都有价值。'],['renkonti','遇见','Ĝis la revido, ni renkontiĝos baldaŭ!','再见，我们很快会再见面！']];
+const day=Math.floor(Date.now()/864e5);
+const W=VOC[day%VOC.length];
+$('#wWord').textContent=W[0];$('#wMean').textContent=W[1];$('#wEx').textContent=W[2]+' '+W[3];
+
+let known=load('known',[0,1,2,3,4]);let fi=load('fi',5)%VOC.length;
+function drawCard(){const v=VOC[fi];$('#fcEo').textContent=v[0];$('#fcZh').textContent=v[1];$('#fcEx').textContent=v[2];$('#fcExZh').textContent=v[3];$('#flip').classList.remove('back');const p=Math.round(known.length/VOC.length*100);$('#fcProg').style.width=p+'%';$('#fcPct').textContent=known.length+' / '+VOC.length;save('known',known);save('fi',fi)}
+function nextCard(){for(let i=1;i<=VOC.length;i++){const j=(fi+i)%VOC.length;if(!known.includes(j)||known.length===VOC.length){fi=j;break}}drawCard()}
+$('#fc').addEventListener('click',()=>$('#flip').classList.toggle('back'));
+$('#fc').addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();$('#flip').classList.toggle('back')}});
+$('#know').onclick=()=>{if(!known.includes(fi))known.push(fi);nextCard()};
+$('#again').onclick=()=>{known=known.filter(x=>x!==fi);nextCard()};
+drawCard();
+
+const END=[['-o','名词','tablo 桌子'],['-a','形容词','bona 好的'],['-e','副词','rapide 快速地'],['-i','动词原形','legi 读'],['-as / -is / -os','现在 / 过去 / 将来时','legas, legis, legos'],['-us','条件式','Se mi povus… 如果我能…'],['-u','命令式、愿望式','Venu! 来吧！'],['-j','复数','bonaj amikoj 好朋友们'],['-n','宾格（直接宾语）','Mi vidas la katon. 我看见猫。']];
+$('#endings').innerHTML=END.map(r=>`<tr><td style="white-space:nowrap"><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join('');
+
+const PATH=[['A1','问候与自我介绍',100],['A1','名词、形容词与复数',100],['A2','动词的时态',70],['A2','宾格 -n 与语序',35],['B1','构词法：词缀全览',10],['B1','相关词表 tabelvortoj',0],['B2','阅读：Gerda malaperis!',0]];
+$('#path').innerHTML=PATH.map(([l,t,p])=>`<li><span class="lvl">${l}</span><div><b>${esc(t)}</b><div class="minibar"><i style="width:${p}%"></i></div></div><span class="pct" style="color:${p===100?'var(--green)':'var(--mute)'}">${p===100?'已完成':p+'%'}</span></li>`).join('');
+
+const XM={c:'ĉ',g:'ĝ',h:'ĥ',j:'ĵ',s:'ŝ',u:'ŭ',C:'Ĉ',G:'Ĝ',H:'Ĥ',J:'Ĵ',S:'Ŝ',U:'Ŭ'};
+const xconv=s=>s.replace(/([cghjsuCGHJSU])[xX]/g,(m,a)=>XM[a]);
+const xupd=()=>$('#xout').textContent=xconv($('#xin').value);
+$('#xin').addEventListener('input',xupd);xupd();
+$('#xcopy').onclick=async e=>{try{await navigator.clipboard.writeText($('#xout').textContent);e.target.textContent='已复制'}catch(_){e.target.textContent='请手动选择复制'}setTimeout(()=>e.target.textContent='复制结果',1600)};
+
+/* ---------- knowledge ---------- */
+const KN=[
+ ['十六条基本语法','语法','1887 年《第一书》附带的 16 条规则构成了世界语语法的骨架：没有不规则动词，词类由词尾标示，重音固定在倒数第二个音节。',['一、只有定冠词 la，没有不定冠词。','二、名词以 -o 结尾，复数加 -j，宾格加 -n。','三、形容词以 -a 结尾，与名词保持数和格一致。','……其余规则涵盖数词、代词、动词时态、副词、介词、发音和构词。','学习建议：先掌握词尾系统，再学构词法，进步最快。']],
+ ['宾格 -n 为什么重要','语法','世界语用 -n 标出直接宾语，所以语序相当自由：“La hundo vidas la katon”与“La katon vidas la hundo”意思相同，都是狗看见猫。',['-n 还表示方向：Mi iras en la domon（我走进房子里），对比 Mi estas en la domo（我在房子里）。','表示日期和时长也常用 -n：Mi venos lundon（我周一来）。']],
+ ['构词法：一个词根，一组词','语法','用词根加前后缀可以派生出大量词汇。以 lern-（学）为例：lerni 学习，lernejo 学校，lernanto 学生，lernolibro 课本。',['常用后缀：-ul-（人）、-ej-（场所）、-in-（女性）、-et-（小）、-eg-（大）、-ist-（职业者）、-ar-（集合）、-ad-（持续动作）。','常用前缀：mal-（相反）、re-（再、回）、ge-（男女两性）、ek-（开始、突然）。','首页的构词器可以直接试验这些组合。']],
+ ['柴门霍夫','人物','路德维克·柴门霍夫（L. L. Zamenhof，1859–1917），眼科医生，生于比亚韦斯托克。1887 年以笔名 Doktoro Esperanto 在华沙出版《第一书》。',['他成长的城市里，多个民族因语言隔阂而彼此猜疑，这促使他构想一种中立的辅助语。','1905 年他出版《世界语基础》（Fundamento de Esperanto），同年参加在布洛涅举行的第一届国际世界语大会。','他的生日 12 月 15 日被世界语者称为柴门霍夫日。']],
+ ['世界语在中国','历史','二十世纪初世界语传入中国，鲁迅、蔡元培、巴金、胡愈之等人都曾支持或学习世界语。',['1951 年中华全国世界语协会成立，同年起出版《中国报道》（El Popola Ĉinio）。','北京曾于 1986 年和 2004 年两次举办国际世界语大会（第 71 届、第 89 届）。','巴金以世界语翻译和创作过作品，并长期担任相关协会职务。']],
+ ['绿星与旗帜','文化','世界语旗为绿底，左上角白色方块中有一颗绿色五角星。绿色象征希望，五角代表五大洲。',['另一常见标志是 Jubilea simbolo（周年标志），1987 年百年纪念时推出，由一个带 E 字的绿色圆形构成。']],
+ ['国际世界语协会 UEA','社群','UEA（Universala Esperanto-Asocio）成立于 1908 年，总部在鹿特丹，每年组织国际世界语大会（Universala Kongreso）。',['青年组织 TEJO 运营 Pasporta Servo：一个世界语者互相免费接待住宿的网络。','1954 年联合国教科文组织在蒙得维的亚通过决议，承认世界语在国际文化交流中的成就。']],
+ ['母语者 denaskuloj','社群','因为国际家庭以世界语为家庭语言，世界上有一批从小说世界语的人，估计在一千到数千人之间。',['语言学界常以他们为样本研究“无母语社群的语言如何自然演变”。']],
+ ['网络时代的世界语','社群','世界语维基百科（Vikipedio）条目数超过三十万；lernu.net、Duolingo 等平台提供免费课程。',['Duolingo 英语用户的世界语课程于 2015 年上线，带来了一批新学习者。','线上社群在 Telegram、Discord 和各类论坛上非常活跃。']]
+];
+function drawKn(){const q=$('#kq').value.trim().toLowerCase(),t=$('#kt').value;const r=KN.map((k,i)=>[k,i]).filter(([k])=>(!t||k[1]===t)&&(!q||(k[0]+k[2]+k[3].join('')).toLowerCase().includes(q)));
+ $('#kgrid').innerHTML=r.length?r.map(([k,i])=>`<button class="kcard" data-i="${i}"><span class="tag">${esc(k[1])}</span><h3>${esc(k[0])}</h3><p>${esc(k[2].slice(0,64))}…</p></button>`).join(''):'<p class="mute">没有找到匹配的条目，换个关键词试试。</p>'}
+$('#kq').addEventListener('input',drawKn);$('#kt').addEventListener('change',drawKn);
+$('#kgrid').addEventListener('click',e=>{const c=e.target.closest('.kcard');if(!c)return;const k=KN[c.dataset.i];$('#dT').textContent=k[0];$('#dTag').innerHTML=`<span class="tag" style="background:#fff">${esc(k[1])}</span>`;$('#dB').innerHTML=`<p>${esc(k[2])}</p>`+k[3].map(x=>`<p>${esc(x)}</p>`).join('');$('#dlg').showModal()});
+$('#dClose').onclick=()=>$('#dlg').close();
+drawKn();
+
+/* ---------- library ---------- */
+const LIT0=[
+ ['Unua Libro','L. L. Zamenhof',1887,'教材','世界语的第一本教科书，包含 16 条语法和约 900 个词根。'],
+ ['Fundamento de Esperanto','L. L. Zamenhof',1905,'工具书','世界语的规范性基础文献，含语法、练习集和词汇表。'],
+ ['Vivo de Zamenhof','Edmond Privat',1920,'原创文学','柴门霍夫传记，以世界语写成。'],
+ ['Metropoliteno','Vladimir Varankin',1933,'原创文学','以莫斯科地铁建设为背景的长篇小说。'],
+ ['Kredu min, sinjorino!','Cezaro Rossetti',1950,'原创文学','幽默的自传体小说，常被推荐为中级读物。'],
+ ['El Popola Ĉinio','中国外文局',1950,'期刊','中国出版的世界语综合性刊物，即《中国报道》。'],
+ ['La Infana Raso','William Auld',1956,'原创文学','长篇史诗，被视为世界语诗歌的代表作。'],
+ ['Plena Ilustrita Vortaro (PIV)','Gaston Waringhien 等',1970,'工具书','最权威的世界语单语详解词典。'],
+ ['Gerda malaperis!','Claude Piron',1983,'教材','只用少量基础词汇写成的侦探故事，初学者经典读物。'],
+ ['La Mastro de l\' Ringoj','J. R. R. Tolkien / William Auld 译',1995,'翻译文学','《魔戒》世界语译本。']
+];
+let LIT=LIT0.concat(load('lit',[]));
+function drawLit(){const q=$('#lq').value.trim().toLowerCase(),k=$('#lk').value,s=$('#ls').value;
+ const r=LIT.filter(x=>(!k||x[3]===k)&&(!q||(x[0]+x[1]).toLowerCase().includes(q))).sort((a,b)=>s==='y'?a[2]-b[2]:a[0].localeCompare(b[0]));
+ $('#lit').innerHTML=r.map(x=>`<tr><td data-l="书名"><b>${esc(x[0])}</b></td><td data-l="作者">${esc(x[1])}</td><td class="y" data-l="年份">${esc(x[2])}</td><td data-l="类型"><span class="tag">${esc(x[3])}</span></td><td data-l="简介" class="mute">${esc(x[4]||'')}</td></tr>`).join('')||'<tr><td colspan="5" class="mute">没有符合条件的文献。</td></tr>';
+ $('#litCount').textContent=`共 ${LIT.length} 条，当前显示 ${r.length} 条。`}
+['#lq','#lk','#ls'].forEach(s=>$(s).addEventListener('input',drawLit));
+$('#addLit').onclick=()=>{$('#litForm').hidden=false;$('#lT').focus()};
+$('#litCancel').onclick=()=>$('#litForm').hidden=true;
+$('#litForm').addEventListener('submit',e=>{e.preventDefault();const y=parseInt($('#lY').value,10);const it=[$('#lT').value.trim(),$('#lA').value.trim(),isNaN(y)?'':y,$('#lK').value,$('#lN').value.trim()];LIT.push(it);save('lit',LIT.slice(LIT0.length));e.target.reset();e.target.hidden=true;drawLit()});
+drawLit();
+
+/* ---------- forum ---------- */
+const CATS=['学习求助','翻译讨论','文化闲谈','活动组织'];
+const COL=['#009a44','#2b6cd6','#b8521a','#7a3fb5','#e8432e'];
+const T0=[
+ {id:1,c:'学习求助',t:'宾格 -n 到底什么时候加？总是忘',a:'小林',d:'2 小时前',b:'"Mi iras al la parko" 和 "Mi iras en la parkon" 有什么区别？',r:[['Verda Kato','al 本身已经表示方向，所以不加 -n；en 后面加 -n 才表示“进入”。'],['老周','可以记成：介词本身没方向时，用 -n 补上方向。']]},
+ {id:2,c:'翻译讨论',t:'《静夜思》世界语译法征集',a:'Lunlumo',d:'昨天',b:'我的初稿：Antaŭ la lito brilas lunlumo, ĉu frosto sur la tero?……大家来改改。',r:[['Poeto','“brilas”很好，第二句可以考虑 “ŝajnas frosto sur la tero”。']]},
+ {id:3,c:'活动组织',t:'12 月 15 日柴门霍夫日，上海线下读书会报名',a:'上海世界语小组',d:'3 天前',b:'本次共读 Gerda malaperis! 第一到三章，初学者友好。名额 20 人。',r:[['小林','报名！第一次参加'],['Stelo','能带朋友吗？他还没开始学']]},
+ {id:4,c:'文化闲谈',t:'你们是怎么开始学世界语的？',a:'Esperantisto',d:'1 周前',b:'我是看到一本旧书《世界语初级讲座》开始的，大家呢？',r:[['Verda Kato','Duolingo 入坑 +1'],['老周','八十年代在电台跟着学的'],['Lunlumo','因为想用 Pasporta Servo 去旅行']]}
+];
+let TH=load('th',null)||T0;let cat='';let open=load('open',1);
+function avatar(n){let h=0;for(const ch of n)h=(h*31+ch.charCodeAt(0))%997;return `<span class="av" style="background:${COL[h%COL.length]}">${esc([...n][0])}</span>`}
+function drawCats(){$('#cats').innerHTML=[['','全部']].concat(CATS.map(c=>[c,c])).map(([v,l])=>`<button class="${cat===v?'on':''}" data-c="${v}">${l}<span class="mute small">${v?TH.filter(t=>t.c===v).length:TH.length}</span></button>`).join('');$('#pC').innerHTML=CATS.map(c=>`<option>${c}</option>`).join('')}
+function drawTh(){const r=TH.filter(t=>!cat||t.c===cat);
+ $('#threads').innerHTML=r.map(t=>`<div class="thread"><button data-o="${t.id}" aria-expanded="${open===t.id}">${avatar(t.a)}<div><h3>${esc(t.t)}</h3><div class="meta">${esc(t.a)} · ${esc(t.d)} · <span class="tag">${esc(t.c)}</span></div></div><span class="count">${t.r.length} 回复</span></button>${open===t.id?`<div class="replies"><p style="margin:12px 0">${esc(t.b)}</p>${t.r.map(([u,x])=>`<div class="reply"><b>${esc(u)}</b><p>${esc(x)}</p></div>`).join('')}<form class="rform" data-r="${t.id}"><input placeholder="写下你的回复…" aria-label="回复" required><button class="btn">回复</button></form></div>`:''}</div>`).join('')||'<p class="mute">这个版块还没有帖子，来发第一帖吧。</p>';
+ const hs=[...TH].sort((a,b)=>b.r.length-a.r.length).slice(0,4);
+ $('#homeThreads').innerHTML=hs.map(t=>`<li><a href="#forumo" data-o="${t.id}">${esc(t.t)}</a><div class="meta">${esc(t.c)} · ${t.r.length} 回复</div></li>`).join('');
+ save('th',TH);save('open',open)}
+$('#cats').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;cat=b.dataset.c;drawCats();drawTh()});
+$('#threads').addEventListener('click',e=>{const b=e.target.closest('button[data-o]');if(!b)return;const id=+b.dataset.o;open=open===id?0:id;drawTh()});
+$('#threads').addEventListener('submit',e=>{e.preventDefault();const id=+e.target.dataset.r,v=e.target.querySelector('input').value.trim();if(!v)return;TH.find(t=>t.id===id).r.push([$('#meName').textContent,v]);drawTh();drawCats()});
+$('#homeThreads').addEventListener('click',e=>{const a=e.target.closest('a[data-o]');if(a){open=+a.dataset.o;cat='';drawCats();drawTh()}});
+$('#newBtn').onclick=()=>{$('#postForm').hidden=false;$('#pT').focus()};
+$('#postCancel').onclick=()=>$('#postForm').hidden=true;
+$('#postForm').addEventListener('submit',e=>{e.preventDefault();const id=Math.max(...TH.map(t=>t.id))+1;TH.unshift({id,c:$('#pC').value,t:$('#pT').value.trim(),a:$('#meName').textContent,d:'刚刚',b:$('#pB').value.trim(),r:[]});open=id;e.target.reset();e.target.hidden=true;drawCats();drawTh()});
+drawCats();drawTh();
+
+/* ---------- culture ---------- */
+const EV=[['12','05','线上','初学者每周会话角','腾讯会议，每周六晚 8 点，零基础可来旁听。'],['12','15','上海','柴门霍夫日读书会','共读 Gerda malaperis! 第 1–3 章。'],['12','15','线上','全球柴门霍夫日直播','各国世界语者轮流朗读，24 小时接力。'],['01','10','北京','新年世界语歌会','用世界语唱中外歌曲，提供歌词本。']];
+const MON=['','1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+const evHtml=EV.map(([m,d,c,t,x])=>`<div class="ev"><div class="cal"><b>${MON[+m]}</b><span>${+d}</span></div><div><b>${esc(t)}</b> <span class="tag">${esc(c)}</span><div class="mute small">${esc(x)}</div></div></div>`).join('');
+$('#events').innerHTML=evHtml;
+$('#homeEvents').innerHTML=EV.slice(0,3).map(([m,d,c,t])=>`<li><span class="date">${+m}/${+d}</span>${esc(t)} <span class="meta">${esc(c)}</span></li>`).join('');
+
+const TL=[[1887,'《第一书》出版',0],[1905,'首届世界大会',1],[1908,'UEA 成立',2],[1917,'柴门霍夫逝世',0],[1921,'SAT 成立',1],[1951,'中华全国世界语协会成立',2],[1954,'教科文组织决议',0],[1970,'PIV 词典出版',1],[1986,'北京第 71 届大会',2],[2002,'lernu.net 上线',2],[2004,'北京第 89 届大会',1],[2015,'Duolingo 课程',0]];
+const svg=$('#tlsvg'),box=$('#tl');
+function drawTL(){const Wd=box.clientWidth,H=box.clientHeight,m=18,y0=1880,y1=2030,X=y=>m+(y-y0)/(y1-y0)*(Wd-2*m),base=H-56,narrow=Wd<640;
+ const items=narrow?TL.filter((_,i)=>i%2===0):TL;
+ let s=`<rect x="${m}" y="${base}" width="${Wd-2*m}" height="14" rx="7" fill="var(--green)"/>`;
+ s+=`<rect x="${X(1887)}" y="${base}" width="${X(2026)-X(1887)}" height="14" rx="7" fill="var(--deep)"/>`;
+ for(let y=1900;y<=2020;y+=narrow?40:20)s+=`<text x="${X(y)}" y="${base+36}" text-anchor="middle" style="fill:var(--mute)">${y}</text>`;
+ items.forEach(([y,t,l])=>{const x=X(y),ty=base-30-l*62;const anc=x>Wd-130?'end':x<130?'start':'middle';
+  s+=`<line x1="${x}" y1="${base}" x2="${x}" y2="${ty+8}" stroke="var(--deep)" stroke-width="1.5"/><circle cx="${x}" cy="${base+7}" r="6" fill="#fff" stroke="var(--deep)" stroke-width="3"/>`;
+  s+=`<text x="${x}" y="${ty-12}" text-anchor="${anc}" style="font-weight:700;fill:var(--coral)">${y}</text><text x="${x}" y="${ty+4}" text-anchor="${anc}">${esc(t)}</text>`});
+ s+=`<use href="#star" x="${X(2026)-14}" y="${base-26}" width="28" height="28" fill="var(--coral)"/><text x="${X(2026)}" y="${base-34}" text-anchor="end" style="font-weight:700">今天</text>`;
+ svg.innerHTML=s}
+const ro=new ResizeObserver(drawTL);ro.observe(box);
+
+/* ---------- router ---------- */
+const PAGES=['hejmo','lerni','scio','biblioteko','forumo','kulturo'];
+function route(){const h=location.hash.slice(1);const p=PAGES.includes(h)?h:'hejmo';document.querySelectorAll('section[data-page]').forEach(s=>s.hidden=s.dataset.page!==p);document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+p));if(p==='kulturo')drawTL();window.scrollTo(0,0)}
+addEventListener('hashchange',route);route();
+}
+</script>
+</body>
+</html>
